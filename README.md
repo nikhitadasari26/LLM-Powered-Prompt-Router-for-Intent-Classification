@@ -1,272 +1,71 @@
-# LLM‑Powered Prompt Router for Intent Classification
+# LLM-Powered Prompt Router for Intent Classification
 
-An intelligent **LLM-powered routing system** that classifies user
-intent and forwards the request to specialized AI expert personas.\
-This architecture follows a **"Classify → Route → Respond"** pattern
-used in modern AI systems to produce higher‑quality responses than
-monolithic prompts.
+This project is a Python service that intelligently routes user requests to specialized AI personas using a two-step LLM process (Classify, then Respond). It demonstrates intent-based routing to provide specialized, context-aware responses using the Groq API.
 
-------------------------------------------------------------------------
+## Core Features
 
-# Architecture Overview
+1. **Intent Classification**: Uses a fast LLM call to classify user intents into `code`, `data`, `writing`, `career`, or `unclear` and returns a JSON object with `intent` and `confidence`.
+2. **Context-Aware Routing**: Routes the user's message to a specialized expert system prompt based on the classified intent.
+3. **Graceful Handling of Unclear Intent**: If the intent is `unclear` or JSON parsing fails, the system safely asks the user a clarifying question instead of hallucinating.
+4. **Structured JSONL Logging**: Logs all classifier inputs, outputs, classification confidence, and final responses to `route_log.jsonl`.
 
-The system performs two main steps:
+## Application Structure
 
-1️⃣ **Intent Classification** - A lightweight LLM prompt classifies the
-user's message. - The response must be structured JSON:
+- **prompts.py**: Defines the system personas (Code, Data, Writing, Career) and the classifier prompt.
+- **router.py**: Contains the core `classify_intent` and `route_and_respond` functions, along with logging logic to `route_log.jsonl`.
+- **app.py**: A Flask server with a `/api/route` REST endpoint for processing messages.
+- **test_router.py**: A script containing 15 diverse test cases to evaluate the routing behavior out of the box.
 
-``` json
-{
-  "intent": "code",
-  "confidence": 0.92
-}
+## Setup Instructions
+
+### Environment Setup
+
+1. Clone the repository.
+2. Create a `.env` file in the root directory:
+
+```env
+OPENAI_API_KEY=your_groq_api_key_here
 ```
 
-2️⃣ **Prompt Routing** - Based on the detected intent, the request is
-routed to a specialized expert persona. - Each persona has its own
-system prompt optimized for that task.
+> **Note:** This project uses the Groq API (which is OpenAI-compatible). Get a free API key from [console.groq.com](https://console.groq.com).
 
-3️⃣ **Response Generation** - A second LLM call generates the final
-answer using the selected expert persona.
+### Running with Docker (Recommended)
 
-4️⃣ **Logging** - Every request is logged to `route_log.jsonl` for
-observability.
-
-------------------------------------------------------------------------
-
-# Supported Intents
-
-  Intent    Expert Persona   Description
-  --------- ---------------- -----------------------------------------------
-  code      Code Expert      Helps with programming problems and debugging
-  data      Data Analyst     Interprets datasets and suggests analysis
-  writing   Writing Coach    Improves clarity, tone, and structure
-  career    Career Advisor   Gives actionable career guidance
-  unclear   Clarification    Asks the user to clarify the request
-
-------------------------------------------------------------------------
-
-# Features
-
-Intent classification using LLM\
-Confidence threshold routing (0.7)\
-Four expert AI personas\
-JSON structured responses\
-Automatic request logging\
-CLI mode for terminal interaction\
-Modern web chat UI\
-Docker container support\
-Error handling for malformed JSON\
-Manual intent override (`@code`, `@writing`, etc.)
-
-------------------------------------------------------------------------
-
-# Project Structure
-
-    .
-    ├── app.py
-    ├── router.py
-    ├── prompts.json
-    ├── test_router.py
-    ├── requirements.txt
-    ├── Dockerfile
-    ├── docker-compose.yml
-    ├── .env.example
-    ├── route_log.jsonl
-    ├── index.html
-    └── README.md
-
-------------------------------------------------------------------------
-
-# Prerequisites
-
--   Docker
--   Docker Compose
--   Python 3.10+
--   Groq API Key
-
-------------------------------------------------------------------------
-
-# Environment Setup
-
-Create a `.env` file in the project root:
-
-``` env
-GROQ_API_KEY=your_groq_api_key_here
-MODEL_NAME=llama3-70b-8192
-LOG_FILE=route_log.jsonl
-```
-
-⚠️ Never commit your real API key to GitHub.
-
-------------------------------------------------------------------------
-
-# Running with Docker (Recommended)
-
-Build and run the application:
-
-``` bash
+```bash
 docker-compose up --build
 ```
 
-After startup, open:
+The API server will be accessible at `http://localhost:3001`.
 
-    http://localhost:8000
+### Running Locally without Docker
 
-------------------------------------------------------------------------
-
-# Running Locally
-
-Install dependencies:
-
-``` bash
+```bash
 pip install -r requirements.txt
-```
-
-Start the server:
-
-``` bash
 python app.py
 ```
 
-Open in browser:
+The server will start on `http://localhost:3000`.
 
-    http://localhost:8000
+### Running Tests
 
-------------------------------------------------------------------------
-
-# CLI Mode
-
-Run the router directly in the terminal:
-
-``` bash
-python app.py --cli
-```
-
-Example:
-
-    You: how do I sort a list in python?
-    Router Intent: code (0.94)
-    Response: ...
-
-------------------------------------------------------------------------
-
-# Running Tests
-
-The project includes **15 required test messages** to validate routing
-behavior.
-
-Run:
-
-``` bash
+```bash
 python test_router.py
 ```
 
-Example test cases:
+This runs 15 diverse test cases and logs all results to `route_log.jsonl`.
 
--   how do i sort a list of objects in python?
--   explain this sql query
--   help me improve this paragraph
--   career advice for software engineers
--   what's the average of these numbers
--   fix this bug pls
+### API Usage
 
-------------------------------------------------------------------------
+Send a POST request to `/api/route`:
 
-# Logging
-
-Every request is saved to:
-
-    route_log.jsonl
-
-Example log entry:
-
-``` json
-{
-  "intent": "code",
-  "confidence": 0.91,
-  "user_message": "how do I sort a list in python",
-  "final_response": "Use the built-in sorted() function..."
-}
+```bash
+curl -X POST http://localhost:3000/api/route -H "Content-Type: application/json" -d '{"message": "how do I sort a list in python?"}'
 ```
 
-This provides **observability and debugging capability**.
+## Design Decisions
 
-------------------------------------------------------------------------
-
-# Error Handling
-
-The classifier may sometimes return invalid JSON.\
-The system handles this safely:
-
-    {
-      "intent": "unclear",
-      "confidence": 0.0
-    }
-
-The router then asks the user for clarification.
-
-------------------------------------------------------------------------
-
-# Manual Intent Override
-
-Users can bypass classification using prefixes:
-
-    @code fix this bug
-    @writing improve this paragraph
-    @career help me choose a career
-
-This directly routes the message to the selected persona.
-
-------------------------------------------------------------------------
-
-# System Design Highlights
-
-This project demonstrates several **production AI design patterns**:
-
--   Prompt routing architecture
--   Intent classification using LLMs
--   Structured JSON outputs
--   Confidence thresholding
--   Expert prompt specialization
--   Observability through logging
--   Containerized deployment
-
-------------------------------------------------------------------------
-
-# Example Workflow
-
-User Input:
-
-    how do i sort a list in python?
-
-Classifier Output:
-
-``` json
-{
- "intent": "code",
- "confidence": 0.94
-}
-```
-
-Router:
-
-    Code Expert Persona Selected
-
-Final Response:
-
-    Python provides sorted() and list.sort() methods...
-
-------------------------------------------------------------------------
-
-# Future Improvements
-
-Possible enhancements:
-
--   Add more expert personas
--   Support multiple LLM providers
--   Add conversation memory
--   Improve UI with streaming responses
--   Add analytics dashboard
-
-------------------------------------------------------------------------
+- **Groq API**: Chosen for its speed and free tier, using the `llama-3.1-8b-instant` model.
+- **Synchronous Architecture**: Keeps the codebase simple and easy to understand.
+- **Separate Prompts Module**: System prompts are defined in `prompts.py` for easy modification and testing.
+- **JSON Fence Stripping**: The classifier handles markdown-wrapped JSON responses gracefully.
+- **JSONL Logging**: Every request is appended to `route_log.jsonl` for observability and debugging.

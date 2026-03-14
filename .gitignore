@@ -1,14 +1,4 @@
-# Environments
-.env
-
-# Dependencies
-.venv
 __pycache__/
-*.pyc
-
-# Docker
-.dockerignore
-
-# IDEs and Tools
-.vscode/
-.idea/
+route_log.jsonl
+.env
+.venv/

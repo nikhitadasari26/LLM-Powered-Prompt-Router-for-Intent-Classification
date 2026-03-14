@@ -1,7 +1,3 @@
-fastapi
-uvicorn
-jinja2
-python-dotenv
 openai
-pydantic
-aiofiles
+python-dotenv
+flask
