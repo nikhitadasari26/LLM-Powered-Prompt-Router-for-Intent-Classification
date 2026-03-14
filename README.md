@@ -48,16 +48,16 @@ observability.
 
 # Features
 
-✅ Intent classification using LLM\
-✅ Confidence threshold routing (0.7)\
-✅ Four expert AI personas\
-✅ JSON structured responses\
-✅ Automatic request logging\
-✅ CLI mode for terminal interaction\
-✅ Modern web chat UI\
-✅ Docker container support\
-✅ Error handling for malformed JSON\
-✅ Manual intent override (`@code`, `@writing`, etc.)
+Intent classification using LLM\
+Confidence threshold routing (0.7)\
+Four expert AI personas\
+JSON structured responses\
+Automatic request logging\
+CLI mode for terminal interaction\
+Modern web chat UI\
+Docker container support\
+Error handling for malformed JSON\
+Manual intent override (`@code`, `@writing`, etc.)
 
 ------------------------------------------------------------------------
 
@@ -270,17 +270,3 @@ Possible enhancements:
 -   Add analytics dashboard
 
 ------------------------------------------------------------------------
-
-# Author
-
-Nikhita Dasari
-
-GitHub Repository:
-
-https://github.com/nikhitadasari26/LLM-Powered-Prompt-Router-for-Intent-Classification
-
-------------------------------------------------------------------------
-
-# License
-
-This project is for educational purposes.
