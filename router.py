@@ -38,12 +38,20 @@ class Router:
                     {"role": "system", "content": self.config["classifier"]["system_prompt"]},
                     {"role": "user", "content": message}
                 ],
-                response_format={"type": "json_object"},
                 temperature=0
             )
             
-            content = response.choices[0].message.content
-            intent_data = json.loads(content)
+            content = response.choices[0].message.content.strip()
+            
+            # Strip markdown code fences if present
+            if content.startswith("```json"):
+                content = content[7:]
+            elif content.startswith("```"):
+                content = content[3:]
+            if content.endswith("```"):
+                content = content[:-3]
+            
+            intent_data = json.loads(content.strip())
             
             # Basic validation
             if "intent" not in intent_data or "confidence" not in intent_data:

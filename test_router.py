@@ -1,10 +1,10 @@
 import asyncio
 import os
-import json
+import time
 from router import Router
 
 # Sample test messages from the requirements
-TEST_MESSAGES = [
+TEST_CASES = [
     "how do i sort a list of objects in python?",
     "explain this sql query for me",
     "This paragraph sounds awkward, can you help me fix it?",
@@ -23,24 +23,24 @@ TEST_MESSAGES = [
 ]
 
 async def run_tests():
-    # Check if OPENAI_API_KEY is set
-    if not os.getenv("OPENAI_API_KEY"):
-        print("WARNING: OPENAI_API_KEY is not set. Tests will likely fail unless mocked.")
-        # We could mock the responses here for demonstration if needed, 
-        # but let's assume the user will run this with their key.
+    print("Starting tests...")
     
     router = Router()
-    print(f"{'#':<3} | {'Intent':<10} | {'Conf':<6} | {'Message':<40}")
-    print("-" * 70)
     
-    for i, msg in enumerate(TEST_MESSAGES, 1):
+    for i, message in enumerate(TEST_CASES, 1):
+        print(f"\n--- Test {i}/{len(TEST_CASES)} ---")
+        print(f"Message: {message}")
+        
         try:
-            # We only run classification to avoid too many API calls if testing cost is a concern,
-            # but the requirement says "Test your router", so we run the full process.
-            result = await router.process_message(msg)
-            print(f"{i:<3} | {result['intent']:<10} | {result['confidence']:>6.2f} | {msg[:37]}...")
+            result = await router.process_message(message)
+            print(f"Classified Intent: {result['intent']} (Confidence: {result['confidence']})")
+            print(f"Response snippet: {result['response'][:150]}...\n")
         except Exception as e:
-            print(f"{i:<3} | ERROR      |        | {msg[:37]}... ({e})")
+            print(f"Error: {e}\n")
+        
+        await asyncio.sleep(1)
+    
+    print("Tests complete. Check route_log.jsonl for output.")
 
 if __name__ == "__main__":
     asyncio.run(run_tests())
