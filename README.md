@@ -83,7 +83,7 @@ Manual intent override (`@code`, `@writing`, etc.)
 -   Docker
 -   Docker Compose
 -   Python 3.10+
--   OpenAI API Key
+-   Groq API Key
 
 ------------------------------------------------------------------------
 
@@ -92,8 +92,8 @@ Manual intent override (`@code`, `@writing`, etc.)
 Create a `.env` file in the project root:
 
 ``` env
-OPENAI_API_KEY=your_openai_api_key_here
-MODEL_NAME=gpt-4o-mini
+GROQ_API_KEY=your_groq_api_key_here
+MODEL_NAME=llama3-70b-8192
 LOG_FILE=route_log.jsonl
 ```
 

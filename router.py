@@ -14,14 +14,17 @@ logger = logging.getLogger(__name__)
 
 class Router:
     def __init__(self, prompts_path: str = "prompts.json"):
-        self.api_key = os.getenv("OPENAI_API_KEY")
-        self.model = os.getenv("MODEL_NAME", "gpt-4o-mini")
+        self.api_key = os.getenv("GROQ_API_KEY")
+        self.model = os.getenv("MODEL_NAME", "llama3-70b-8192")
         self.log_file = os.getenv("LOG_FILE", "route_log.jsonl")
         
         if not self.api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is not set")
+            raise ValueError("GROQ_API_KEY environment variable is not set")
             
-        self.client = AsyncOpenAI(api_key=self.api_key)
+        self.client = AsyncOpenAI(
+            api_key=self.api_key,
+            base_url="https://api.groq.com/openai/v1"
+        )
         
         with open(prompts_path, "r") as f:
             self.config = json.load(f)
