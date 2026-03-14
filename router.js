@@ -9,7 +9,7 @@ const { Groq } = require('groq-sdk');
 const { SYSTEM_PROMPTS, CLASSIFIER_PROMPT } = require('./prompts');
 
 const groq = new Groq({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.GROQ_API_KEY,
 });
 
 const LOG_FILE = 'route_log.jsonl';

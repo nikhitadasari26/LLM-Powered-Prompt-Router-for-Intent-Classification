@@ -25,7 +25,7 @@ This project is a Node.js service that intelligently routes user requests to spe
 2. Create a `.env` file in the root directory:
 
 ```env
-OPENAI_API_KEY=your_groq_api_key_here
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
 > **Note:** This project uses the Groq API (which is OpenAI-compatible). Get a free API key from [console.groq.com](https://console.groq.com).
